@@ -78,7 +78,7 @@
     duplicatePlan: function () { return C.planDuplicateRenames(state.duplicates, function () { return false; }); },
     label: function () {}, select: function () {}, retry: function () {}, dismissError: function () {},
     fileUrl: function () { return ''; }, reveal: function () {},
-    copyReport: function () { return true; }, version: C.VERSION, updateInfo: { text: '' }
+    copyReport: function () { return Promise.resolve('已复制，粘贴发过来'); }, version: C.VERSION, updateInfo: { text: '' }
   };
   if (which === 'old' || which === 'dup') {
     setTimeout(function () {

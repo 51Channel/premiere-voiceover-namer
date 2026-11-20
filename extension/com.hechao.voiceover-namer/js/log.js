@@ -66,10 +66,12 @@
       head.push('浏览器：' + navigator.userAgent);
       return head.join('\n') + '\n\n最近的日志：\n' + tail(150).join('\n');
     },
-    // 复制到剪贴板（CEP 里 navigator.clipboard 不一定能用，用老办法）
+    // 复制问题报告，返回给用户看的一句话。
+    // 先用页面复制；不行就用系统命令（Mac pbcopy、Windows PowerShell）；再不行存到桌面。
     copyReport: function () {
+      var text = log.report();
       var ta = document.createElement('textarea');
-      ta.value = log.report();
+      ta.value = text;
       ta.style.position = 'fixed';
       ta.style.opacity = '0';
       document.body.appendChild(ta);
@@ -77,9 +79,39 @@
       var ok = false;
       try { ok = document.execCommand('copy'); } catch (e) {}
       document.body.removeChild(ta);
-      return ok;
+      if (ok) return Promise.resolve('已复制，粘贴发过来');
+      return systemCopy(text).then(function () { return '已复制，粘贴发过来'; }, function () {
+        return saveToDesktop(text);
+      });
     }
   };
+
+  function systemCopy(text) {
+    return new Promise(function (resolve, reject) {
+      try {
+        var cp = req('child_process');
+        var os = req('os');
+        var child = os.platform() === 'win32'
+          ? cp.spawn('powershell.exe', ['-NoProfile', '-Command', '[Console]::InputEncoding=[Text.Encoding]::UTF8; Set-Clipboard -Value ([Console]::In.ReadToEnd())'])
+          : cp.spawn('pbcopy', [], { env: { LANG: 'en_US.UTF-8', PATH: '/usr/bin:/bin' } });
+        child.on('error', reject);
+        child.on('exit', function (code) { if (code === 0) resolve(); else reject(new Error('退出码 ' + code)); });
+        child.stdin.end(text, 'utf8');
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  function saveToDesktop(text) {
+    try {
+      var p = req('path').join(req('os').homedir(), 'Desktop', '赫朝录音改名-问题报告.txt');
+      fs.writeFileSync(p, text, 'utf8');
+      return Promise.resolve('复制不了，已存到桌面：赫朝录音改名-问题报告.txt');
+    } catch (e) {
+      return Promise.resolve('复制失败，日志在 ' + (file || '（没有日志文件）'));
+    }
+  }
 
   function showCrash(text) {
     var t = document.getElementById('heroTitle');
@@ -91,7 +123,7 @@
     s.textContent = text;
     a.innerHTML = '<button class="btn btn-primary" type="button">复制问题报告</button>';
     a.firstChild.onclick = function () {
-      a.firstChild.textContent = log.copyReport() ? '已复制，粘贴发过来' : '复制失败';
+      log.copyReport().then(function (msg) { a.firstChild.textContent = msg; });
     };
   }
 

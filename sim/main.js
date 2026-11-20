@@ -147,7 +147,8 @@ async function main() {
   check('出错画面有“复制问题报告”', (await text('#heroActions')).includes('复制问题报告'));
   await shot('出错');
   if (process.env.CI) {
-    await js(`document.querySelector('#heroActions [data-act="report"]').click()`);
+    await win.webContents.executeJavaScript(`document.querySelector('#heroActions [data-act="report"]').click()`, true);
+    await sleep(1500);
     const copied = require('electron').clipboard.readText();
     check('问题报告复制到剪贴板', copied.includes('赫朝录音改名 问题报告') && copied.includes('音频 3.wav'), copied.slice(0, 80));
   }

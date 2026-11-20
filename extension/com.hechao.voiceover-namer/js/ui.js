@@ -174,7 +174,7 @@
       if (!b) return;
       if (b.dataset.act === 'retry') api.retry();
       if (b.dataset.act === 'dismiss') api.dismissError();
-      if (b.dataset.act === 'report') b.textContent = api.copyReport() ? '已复制，粘贴发过来' : '复制失败';
+      if (b.dataset.act === 'report') Promise.resolve(api.copyReport()).then(function (msg) { b.textContent = msg; });
     });
 
     function notices(s) {
@@ -295,9 +295,11 @@
     $('foot').addEventListener('click', function (e) {
       var b = e.target.closest('button');
       if (!b || b.dataset.act !== 'report') return;
-      reportCopied = !!api.copyReport();
-      foot(state);
-      setTimeout(function () { reportCopied = false; foot(state); }, 4000);
+      Promise.resolve(api.copyReport()).then(function (msg) {
+        reportCopied = msg;
+        foot(state);
+        setTimeout(function () { reportCopied = false; foot(state); }, 5000);
+      });
     });
 
     $('list').addEventListener('click', function (e) {
@@ -348,7 +350,7 @@
       if (s.waitingDeletes) html += '<div>' + s.waitingDeletes + ' 个旧文件 Premiere 还占着，松手后自动删</div>';
       html += '<div class="foot-row"><span>' + esc(api.version ? '版本 ' + api.version : '') +
         (api.updateInfo && api.updateInfo.text ? ' · ' + esc(api.updateInfo.text) : '') + '</span>' +
-        (api.copyReport ? '<button class="link" data-act="report">' + (reportCopied ? '已复制，粘贴发过来' : '复制问题报告') + '</button>' : '') + '</div>';
+        (api.copyReport ? '<button class="link" data-act="report">' + esc(reportCopied || '复制问题报告') + '</button>' : '') + '</div>';
       if ($('foot').innerHTML !== html) $('foot').innerHTML = html;
     }
 
