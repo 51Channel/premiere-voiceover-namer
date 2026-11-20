@@ -55,13 +55,16 @@ async function main() {
       additionalArguments: ['--vn-project=' + projPath, '--vn-setup=' + setupFile],
     },
   });
+  // Windows 上藏起来的窗口不重画，截图会慢一拍：放到屏幕外显示（不抢前台）
+  if (process.platform === 'win32') win.showInactive();
   win.webContents.on('console-message', (_e, level, message, line, source) => {
     if (level >= 3) consoleErrors.push(`${message}（${path.basename(source || '')}:${line}）`);
   });
   const js = (code) => win.webContents.executeJavaScript(code);
   const text = (sel) => js(`(document.querySelector(${JSON.stringify(sel)})||{}).textContent||''`);
   async function shot(name) {
-    await sleep(350);
+    win.webContents.invalidate();
+    await sleep(500);
     const img = await win.webContents.capturePage();
     const file = path.join(outDir, String(++shotNo).padStart(2, '0') + '-' + name + '.png');
     fs.writeFileSync(file, img.toPNG());
@@ -82,6 +85,7 @@ async function main() {
 
   // 1. 打开面板
   if (await waitFor('打开面板后进入待命', async () => (await text('#heroTitle')) === '点音轨上的麦克风直接录')) check('打开面板后进入待命', true);
+  check('空列表提示跟着工程走', (await text('.empty')).includes('点时间线音轨'), await text('.empty'));
   check('显示工程名和序列', (await text('#where')).includes('318最终版'), await text('#where'));
   check('提示老录音和撞名素材', (await js(`document.querySelectorAll('.notice').length`)) === 2);
   await shot('打开面板');
@@ -101,6 +105,7 @@ async function main() {
   check('原来的 音频 2.wav 删掉了', !fs.existsSync(newRec));
   check('时间线片段改名为 配音01', (await js(`window.__vnSim.pr.clips()[1].name`)) === '配音01');
   check('列表里出现这条录音', (await js(`document.querySelectorAll('.rec').length`)) === 1);
+  check('画面上显示“改好了”', (await text('#heroTitle')) === '改好了');
   await shot('录完自动改名');
 
   // 3. 起名

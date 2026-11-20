@@ -246,7 +246,7 @@
     }
 
     function list(s) {
-      var key = s.recordings.map(function (r) { return r.path + '|' + r.display + '|' + r.duration; }).join('\n') + '#' + (s.phase === 'paused');
+      var key = s.recordings.map(function (r) { return r.path + '|' + r.display + '|' + r.duration; }).join('\n') + '#' + (s.phase === 'paused') + '#' + !!s.project;
       $('listCount').textContent = s.recordings.length ? s.recordings.length + ' 条' : '';
       if (key === listKey && !s._force) return;
       listKey = key;
