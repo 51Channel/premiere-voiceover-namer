@@ -51,12 +51,15 @@ async function main() {
     show: false, paintWhenInitiallyHidden: true, backgroundColor: '#232323',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true, contextIsolation: false, sandbox: false,
+      nodeIntegration: true, contextIsolation: false, sandbox: false, backgroundThrottling: false,
       additionalArguments: ['--vn-project=' + projPath, '--vn-setup=' + setupFile],
     },
   });
-  // Windows 上藏起来的窗口不重画，截图会慢一拍：放到屏幕外显示（不抢前台）
-  if (process.platform === 'win32') win.showInactive();
+  // Windows 上藏起来或在屏幕外的窗口不重画，截图会慢一拍。测试机上没人用，直接摆到屏幕上
+  if (process.platform === 'win32' && process.env.CI) {
+    win.setPosition(0, 0);
+    win.showInactive();
+  }
   win.webContents.on('console-message', (_e, level, message, line, source) => {
     if (level >= 3) consoleErrors.push(`${message}（${path.basename(source || '')}:${line}）`);
   });
