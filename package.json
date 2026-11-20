@@ -1,27 +1,12 @@
 {
   "name": "premiere-voiceover-namer",
-  "version": "0.5.7",
+  "version": "1.0.0",
   "private": true,
-  "description": "为 Premiere Pro 自动命名录音并整理同名音频、视频和图片的 UXP 插件",
-  "type": "commonjs",
+  "description": "Premiere 画外音录完自动改成不重名的名字",
   "scripts": {
-    "clean": "node scripts/clean.mjs",
-    "build": "node scripts/build.mjs",
     "test": "node --test tests/*.test.js",
-    "preview:panel": "node scripts/preview-panel.mjs",
-    "install:user": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-user-plugin.ps1",
-    "uninstall:user": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/uninstall-user-plugin.ps1",
-    "install:user:macos": "bash scripts/install-user-plugin-macos.sh",
-    "uninstall:user:macos": "bash scripts/uninstall-user-plugin-macos.sh",
-    "package:macos": "node scripts/package-macos.mjs",
-    "verify:macos": "node scripts/verify-macos-package.mjs",
-    "package:windows": "node scripts/package-windows.mjs",
-    "verify:windows": "node scripts/verify-windows-package.mjs",
-    "test:recycle-native": "node scripts/test-recycle-helper.mjs",
-    "check:macos": "npm run check && npm run package:macos && npm run verify:macos",
-    "check": "npm run test && npm run build && node scripts/verify-build.mjs"
+    "preview": "node scripts/preview.mjs",
+    "package": "node scripts/package.mjs"
   },
-  "engines": {
-    "node": ">=20"
-  }
+  "engines": { "node": ">=20" }
 }

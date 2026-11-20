@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  赫朝录音改名（CEP 扩展）。Premiere Pro 2019（13.0）起都能用，Mac 和 Windows 一样。
+  PR 一启动就在后台跑（不用打开面板也会改名）；想看录音列表就从「窗口 → 扩展 → 赫朝录音改名」打开。
+-->
+<ExtensionManifest Version="9.0" ExtensionBundleId="com.hechao.voiceover-namer" ExtensionBundleVersion="1.0.0"
+  ExtensionBundleName="赫朝录音改名" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ExtensionList>
+    <Extension Id="com.hechao.voiceover-namer.panel" Version="1.0.0" />
+  </ExtensionList>
+  <ExecutionEnvironment>
+    <HostList>
+      <Host Name="PPRO" Version="[13.0,99.9]" />
+    </HostList>
+    <LocaleList>
+      <Locale Code="All" />
+    </LocaleList>
+    <RequiredRuntimeList>
+      <RequiredRuntime Name="CSXS" Version="9.0" />
+    </RequiredRuntimeList>
+  </ExecutionEnvironment>
+  <DispatchInfoList>
+    <Extension Id="com.hechao.voiceover-namer.panel">
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <ScriptPath>./jsx/host.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+          <StartOn>
+            <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          </StartOn>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Menu>赫朝录音改名</Menu>
+          <Geometry>
+            <Size>
+              <Height>560</Height>
+              <Width>340</Width>
+            </Size>
+            <MinSize>
+              <Height>320</Height>
+              <Width>260</Width>
+            </MinSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+  </DispatchInfoList>
+</ExtensionManifest>

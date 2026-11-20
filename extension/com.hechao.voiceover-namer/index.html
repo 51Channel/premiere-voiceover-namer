@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>录音改名</title>
+  <link rel="stylesheet" href="css/panel.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="top">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">录音改名</span>
+      </div>
+      <label class="switch" title="录完自动改名">
+        <span class="switch-text" id="autoText">自动</span>
+        <input type="checkbox" id="autoToggle" checked>
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </header>
+    <div class="where" id="where">正在连接 Premiere</div>
+
+    <section class="hero" id="hero" data-phase="connecting">
+      <div class="hero-icon" id="heroIcon" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <div class="hero-title" id="heroTitle">正在连接 Premiere</div>
+        <div class="hero-sub" id="heroSub"></div>
+      </div>
+      <div class="hero-actions" id="heroActions"></div>
+    </section>
+
+    <div class="notices" id="notices"></div>
+
+    <section class="list-wrap">
+      <div class="list-head">
+        <span class="list-title">这个工程的录音</span>
+        <span class="list-count" id="listCount"></span>
+      </div>
+      <div class="list" id="list"></div>
+    </section>
+
+    <footer class="foot" id="foot"></footer>
+
+    <div class="sheet" id="sheet" hidden>
+      <div class="sheet-card">
+        <div class="sheet-head">
+          <div class="sheet-title" id="sheetTitle"></div>
+          <div class="sheet-sub" id="sheetSub"></div>
+        </div>
+        <div class="sheet-body" id="sheetBody"></div>
+        <div class="sheet-foot">
+          <button class="btn btn-ghost" id="sheetCancel" type="button">先不改</button>
+          <button class="btn btn-primary" id="sheetOk" type="button">全部改名</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/core.js"></script>
+  <script src="js/wave.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/host-bridge.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
