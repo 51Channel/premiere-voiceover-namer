@@ -1,0 +1,66 @@
+{
+  "version": "1.1.0",
+  "commit": "da115843eff9c2739c136587e6ae8b56dc273f8a",
+  "files": [
+    {
+      "path": "CSXS/manifest.xml",
+      "size": 1945,
+      "sha256": "1d8b6d13037362e666c141e3672afa6e3fb26de2599d48185fb77c1d961c99a3"
+    },
+    {
+      "path": "css/panel.css",
+      "size": 10295,
+      "sha256": "7f2d8dc7a9f16a279a68bdb77368510998b0f8c7b0dd7faad487afede5ae414c"
+    },
+    {
+      "path": "index.html",
+      "size": 2363,
+      "sha256": "0608470b37c3439995ee54e7b10522ab29f4cfa7cdd18bbb83093aca14518b73"
+    },
+    {
+      "path": "js/core.js",
+      "size": 7799,
+      "sha256": "60c258f090d284247d2a25155e511e03de5f75cf70093c1b410fc4616c9e037f"
+    },
+    {
+      "path": "js/engine.js",
+      "size": 20426,
+      "sha256": "cab0046157735b819020ebaba0b940ae27442837426796a92f00a58dc4563b0c"
+    },
+    {
+      "path": "js/host-bridge.js",
+      "size": 1661,
+      "sha256": "0c026329b905ff438d59516ce1b8f7acda9d3ba22003cc3728eb6e05cf3a497e"
+    },
+    {
+      "path": "js/log.js",
+      "size": 5510,
+      "sha256": "73e890916617bf19067af03770e1b1a41d59f340f35da49fd2e96bc90ff1b9f4"
+    },
+    {
+      "path": "js/main.js",
+      "size": 5448,
+      "sha256": "c3f7b0a2c8402d37fd6f45c99ac55eb1a0e75a380330caa0e6856c12b0ad02e4"
+    },
+    {
+      "path": "js/ui.js",
+      "size": 17657,
+      "sha256": "b331fb418c3ab001508c254272d77df3cedfa151484ad4032b9ed5e987b9aa5c"
+    },
+    {
+      "path": "js/updater.js",
+      "size": 5416,
+      "sha256": "b6829037a7760433b97e47d4a87052324a2c3ff3400bb450eca023a57c12bcc8"
+    },
+    {
+      "path": "js/wave.js",
+      "size": 4786,
+      "sha256": "485b453b2c4be11da1b3cbcec5f831f861ebc5542ba5cd5e56818ba3c2919416"
+    },
+    {
+      "path": "jsx/host.jsx",
+      "size": 6926,
+      "sha256": "ae59bf8e77261f968a5dd91013442e9a8fa8210d32fa601957d42db8503e5ce6"
+    }
+  ]
+}
