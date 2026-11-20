@@ -1,7 +1,7 @@
 // 读 WAV：时长和波形缩略图（给录音列表画波形用）。支持 16/24/32 位整数和 32 位浮点 PCM。
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory();
-  else root.VNWave = factory();
+  if (typeof window !== 'undefined' && window.document) root.VNWave = factory();
+  else module.exports = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 

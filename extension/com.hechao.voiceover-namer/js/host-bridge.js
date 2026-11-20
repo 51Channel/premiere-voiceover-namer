@@ -1,8 +1,8 @@
 // 面板和 Premiere 之间的那根线：把调用拼成 ExtendScript，交给 PR 执行，结果按 JSON 读回。
 // evalScript(script, callback) 是 CEP 自带的；测试里换成在 Node 虚拟机里跑 host.jsx。
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./core.js'));
-  else root.VNHostBridge = factory(root.VNCore);
+  if (typeof window !== 'undefined' && window.document) root.VNHostBridge = factory(root.VNCore);
+  else module.exports = factory(require('./core.js'));
 })(typeof self !== 'undefined' ? self : this, function (C) {
   'use strict';
 

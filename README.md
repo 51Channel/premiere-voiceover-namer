@@ -31,6 +31,12 @@ Premiere 里点音轨上的麦克风录画外音，录出来的文件默认叫�
 
 支持 Premiere Pro 2019（13.0）到 2026，Mac 和 Windows。
 
+## 出了问题怎么办
+
+- **不用描述**：面板底部有「复制问题报告」，出错时状态栏上也有。点一下，粘贴发过来就行，里面有插件版本、系统、Premiere 版本、工程路径和最近的日志。
+- 日志文件：Mac `~/Library/Logs/赫朝录音改名/log.txt`，Windows `%APPDATA%\赫朝录音改名\log.txt`。
+- **自动更新**：PR 开着时每 6 小时看一次有没有新版，有就自己下载、核对、换上，面板刷新一下就是新版，不用重装、不用重启 PR。新版只有在 Windows 和 Mac 上测试全过以后才会发出来。
+
 ## 安全
 
 - 不覆盖任何已有文件：目标名字被占了就加 `_2`。
@@ -42,12 +48,20 @@ Premiere 里点音轨上的麦克风录画外音，录出来的文件默认叫�
 ## 开发
 
 ```bash
-npm test          # 命名规则、波形、整条链路（真正的 host.jsx 跑在假 Premiere 里，读写真文件）
+npm ci            # 装模拟环境用的 Electron
+npm test          # 命名规则、波形、整条链路（真正的 host.jsx 跑在假 Premiere 里，读写真文件）、自动更新
+npm run sim       # 模拟环境：在 Electron 里打开真正的面板，接假 Premiere 工程走一遍，每步截图到 out/sim/
 npm run preview   # 不开 PR 看面板：http://127.0.0.1:4180/?state=ready ，四种状态并排：/preview/overview.html
 npm run package   # 打安装包
 ```
 
 预览的 `state` 可选：`ready` `empty` `waiting` `working` `done` `error` `unsaved` `paused` `old` `dup` `connecting`。
+
+### 没有 Windows 电脑也能测
+
+每次推送，GitHub 会在一台 Windows 和一台 Mac 上：跑全部测试（Windows 上还专门测 Premiere 占着文件删不掉的情况）、跑模拟环境并截图、用安装脚本真装一遍。截图在这次运行的「Artifacts」里（模拟截图-Windows / 模拟截图-macOS）。main 上两边都通过，才发布到 `release` 分支，装了插件的电脑从那里自动更新。
+
+模拟环境模拟的是 Premiere 外面那层（CEP：Chromium + Node），Premiere 本身是假的（`tests/helpers/fake-premiere.js`）。它能抓到“面板起不来”“按钮没反应”“文件改坏了”这类问题，抓不到 Premiere 自己接口的怪脾气，那部分还得靠问题报告。
 
 | 文件 | 干嘛的 |
 |---|---|
@@ -56,6 +70,9 @@ npm run package   # 打安装包
 | `js/core.js` | 命名规则、查重（纯函数） |
 | `js/wave.js` | 读 WAV 时长和波形 |
 | `js/ui.js` `css/panel.css` | 面板 |
+| `js/updater.js` | 自动更新 |
+| `js/log.js` | 日志和问题报告 |
+| `sim/` | 模拟环境 |
 
 ## 为什么从 1.0 重写
 

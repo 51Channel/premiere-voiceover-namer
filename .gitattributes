@@ -1,0 +1,2 @@
+# Windows 批处理必须是 CRLF，否则 cmd 会读错 goto 和标签
+*.bat -text

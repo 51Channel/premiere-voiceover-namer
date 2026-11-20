@@ -1,0 +1,81 @@
+# 每次推送：在真的 Windows 和 Mac 上跑全部测试、试装一遍。
+# main 上两边都过了，才把这一版发到 release 分支——装了插件的电脑只从 release 分支自动更新。
+name: 测试和发布
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: 测试（${{ matrix.os }}）
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 装依赖（模拟环境要用 Electron）
+        run: npm ci
+      - name: 自动测试
+        run: npm test
+      - name: 模拟环境：真面板 + 假 Premiere 走一遍
+        run: npm run sim
+      - name: 保存模拟截图
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 模拟截图-${{ runner.os }}
+          path: out/sim/
+          if-no-files-found: warn
+      - name: 试装（Windows）
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          VN_NO_PAUSE: '1'
+        run: |
+          & ".\scripts\安装-Windows.bat"
+          if ($LASTEXITCODE -ne 0) { throw "安装脚本失败：$LASTEXITCODE" }
+          $m = Join-Path $env:APPDATA 'Adobe\CEP\extensions\com.hechao.voiceover-namer\CSXS\manifest.xml'
+          if (-not (Test-Path $m)) { throw "没装上：$m" }
+          foreach ($v in 9..13) {
+            $val = (Get-ItemProperty "HKCU:\Software\Adobe\CSXS.$v").PlayerDebugMode
+            if ($val -ne '1') { throw "CSXS.$v 没打开未签名扩展" }
+          }
+          Write-Host "Windows 安装通过"
+      - name: 试装（Mac）
+        if: runner.os == 'macOS'
+        run: |
+          ./scripts/安装-macOS.command
+          test -f "$HOME/Library/Application Support/Adobe/CEP/extensions/com.hechao.voiceover-namer/CSXS/manifest.xml"
+          test "$(defaults read com.adobe.CSXS.12 PlayerDebugMode)" = "1"
+          echo "Mac 安装通过"
+      - name: 打安装包
+        if: runner.os == 'macOS'
+        run: npm run package
+
+  publish:
+    name: 发布到 release 分支
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 生成更新清单
+        run: node scripts/make-update.mjs "$GITHUB_SHA" > update.json && cat update.json
+      - name: 推到 release
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git checkout -B release
+          git add -f update.json
+          git commit -m "发布 $(node -p "require('./package.json').version")（$GITHUB_SHA）"
+          git push -f origin release

@@ -2,8 +2,9 @@
 // 录音文件名：<工程名>_配音<编号>[_<自己起的名字>]_<月日-时分>.wav，例如 318最终版_配音07_开场白_1119-1530.wav
 // 素材箱和时间线上只显示短名：配音07 开场白
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory();
-  else root.VNCore = factory();
+  // 面板页面里（CEP 开了 Node）module 也存在，所以先看是不是在页面里
+  if (typeof window !== 'undefined' && window.document) root.VNCore = factory();
+  else module.exports = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
@@ -198,6 +199,9 @@
   }
 
   return {
+    VERSION: '1.1.0',
+    // 自动更新从这个仓库的 release 分支拿新版；仓库搬家改这里
+    REPO: '51Channel/premiere-voiceover-namer',
     baseName: baseName,
     dirName: dirName,
     joinPath: joinPath,

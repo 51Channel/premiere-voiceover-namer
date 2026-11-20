@@ -165,6 +165,7 @@ test('Premiere 换不了文件时不删原文件、把新文件收回', async ()
   assert.deepStrictEqual(fs.readdirSync(projDir).sort(), ['318最终版.prproj', '音频 1.wav']);
   assert.strictEqual(engine.state.phase, 'error');
   assert.match(engine.state.error.text, /不能换文件/);
+  assert.strictEqual(engine.state.nextDisplay, '配音01', '没改成的不占编号');
 });
 
 test('工程没保存：提示先保存，什么都不动', async () => {
@@ -192,4 +193,17 @@ test('同一文件夹已有同名文件时绝不覆盖', async () => {
   await ticks(engine, 2);
   assert.strictEqual(fs.readFileSync(blocker, 'utf8'), 'someone else');
   assert.strictEqual(path.basename(item.getMediaPath()), `318最终版_配音01_${stamp}_2.wav`);
+});
+
+test('工程加载慢：老文件晚出现在工程里，也只提示不自动改', async () => {
+  const { projDir, pr, engine } = setup();
+  await ticks(engine, 1); // 面板先起来，工程里还没东西
+  const raw = path.join(projDir, '音频 1.wav');
+  writeWav(raw, 1);
+  const longAgo = new Date(Date.now() - 3600 * 1000);
+  fs.utimesSync(raw, longAgo, longAgo);
+  pr.record('音频 1.wav', raw);
+  await ticks(engine, 3);
+  assert.ok(fs.existsSync(raw));
+  assert.strictEqual(engine.state.oldRecordings.length, 1);
 });

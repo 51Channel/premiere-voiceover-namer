@@ -1,8 +1,8 @@
 // 面板的大脑：盯着工程，发现新录音就改名；也负责老录音、同名素材和手动起名。
 // 依赖都从外面传进来（Premiere、文件系统、时间、存储），这样 Node 里能整套测。
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./core.js'), require('./wave.js'));
-  else root.VNEngine = factory(root.VNCore, root.VNWave);
+  if (typeof window !== 'undefined' && window.document) root.VNEngine = factory(root.VNCore, root.VNWave);
+  else module.exports = factory(require('./core.js'), require('./wave.js'));
 })(typeof self !== 'undefined' ? self : this, function (C, W) {
   'use strict';
 
@@ -11,6 +11,7 @@
   var STABLE_MS = 1500;
   var DONE_SHOW_MS = 6000;
   var RETRY_DELETE_MS = 10000;
+  var FRESH_MS = 120000;
 
   function Engine(deps) {
     this.host = deps.host;
@@ -19,6 +20,7 @@
     this.now = deps.now || function () { return Date.now(); };
     this.storage = deps.storage || { get: function () { return null; }, set: function () {} };
     this.schedule = deps.schedule || function (fn, ms) { return setTimeout(fn, ms); };
+    this.log = deps.log || null;
     this.listeners = [];
     this.timer = null;
     this.running = false;
@@ -26,6 +28,7 @@
     this.waveCache = {};
     this.observed = {};
     this.projectKey = null;
+    this.sessionStart = this.now();
     this.baseline = null;
     this.items = [];
     this.lastSig = null;
@@ -70,6 +73,7 @@
   };
 
   Engine.prototype.note = function (text, kind) {
+    if (this.log) this.log[kind === 'error' ? 'error' : 'info'](text);
     var log = [{ text: text, kind: kind || 'info', at: this.now() }].concat(this.state.log).slice(0, 30);
     this.set({ log: log });
   };
@@ -156,6 +160,7 @@
   Engine.prototype.resetProject = function (key) {
     if (this.projectKey === key) return;
     this.projectKey = key;
+    this.sessionStart = this.now();
     this.baseline = null;
     this.items = [];
     this.lastSig = null;
@@ -239,8 +244,11 @@
     }
     var old = [];
     this.candidates = [];
+    // 只有这次打开工程以后才写出来的“音频 N”才自动改；更早的文件就算刚出现在工程里（比如工程加载慢）也只提示
     defaults.forEach(function (f) {
-      if (self.baseline[C.pathKey(f.path)]) {
+      var st = self.statOf(f.path);
+      var fresh = st && st.mtimeMs >= self.sessionStart - FRESH_MS;
+      if (self.baseline[C.pathKey(f.path)] || (st && !fresh)) {
         var d = self.describe(f);
         if (d) old.push(d);
       } else {
@@ -396,6 +404,8 @@
     var stamp = o.stamp || C.stampOf(new Date(st.mtimeMs));
     var display = C.displayName(number, o.label);
     var from = C.baseName(f.path);
+    var was = C.parseRecording(from);
+    if (was) from = C.displayName(was.number, was.label);
     this.set({ phase: 'working', current: { from: from, to: display } });
 
     function attempt(n) {
@@ -427,6 +437,11 @@
         self.set({ phase: 'done', lastDone: done, current: null, error: null });
         return done;
       });
+    }).catch(function (e) {
+      // 没改成就把编号还回去
+      var at = self.takenNumbers.lastIndexOf(number);
+      if (at >= 0 && !o.number) self.takenNumbers.splice(at, 1);
+      throw e;
     });
   };
 

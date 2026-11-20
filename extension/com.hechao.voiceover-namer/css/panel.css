@@ -95,7 +95,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: #3a3a3a; color: var(--text-1); font-weight: 600;
 }
 .hero-sub .arrow { color: var(--text-3); margin: 0 4px; }
-.hero-actions { flex: none; display: flex; gap: 6px; }
+.hero-actions { flex: none; display: flex; flex-wrap: wrap; gap: 6px; }
 .hero-actions:empty { display: none; }
 
 .hero[data-phase="ready"] .hero-icon { background: var(--rec-soft); color: var(--rec); }
@@ -199,6 +199,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .empty-title { color: var(--text-2); font-size: 13px; font-weight: 600; }
 
 .foot { color: var(--text-3); font-size: 10.5px; line-height: 1.5; }
+.foot-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 2px; }
+.link { border: 0; background: none; padding: 0; color: var(--text-2); font-size: 10.5px; text-decoration: underline; text-underline-offset: 2px; }
+.link:hover { color: var(--text-1); }
 .foot code { font-family: var(--mono); color: var(--text-2); overflow-wrap: anywhere; }
 
 /* 确认弹层 */

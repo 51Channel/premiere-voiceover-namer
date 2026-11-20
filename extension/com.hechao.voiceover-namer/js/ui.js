@@ -154,7 +154,8 @@
         case 'error':
           title = '没改成'; sub = esc(s.error && s.error.text); ic = 'alert';
           actions = (s.error && s.error.retry ? '<button class="btn btn-primary" data-act="retry">重试</button>' : '') +
-            '<button class="btn" data-act="dismiss">知道了</button>';
+            '<button class="btn" data-act="report">复制问题报告</button>' +
+            '<button class="btn btn-ghost" data-act="dismiss">知道了</button>';
           break;
         default:
           title = '正在连接 Premiere';
@@ -173,6 +174,7 @@
       if (!b) return;
       if (b.dataset.act === 'retry') api.retry();
       if (b.dataset.act === 'dismiss') api.dismissError();
+      if (b.dataset.act === 'report') b.textContent = api.copyReport() ? '已复制，粘贴发过来' : '复制失败';
     });
 
     function notices(s) {
@@ -289,6 +291,15 @@
       return out;
     }
 
+    var reportCopied = false;
+    $('foot').addEventListener('click', function (e) {
+      var b = e.target.closest('button');
+      if (!b || b.dataset.act !== 'report') return;
+      reportCopied = !!api.copyReport();
+      foot(state);
+      setTimeout(function () { reportCopied = false; foot(state); }, 4000);
+    });
+
     $('list').addEventListener('click', function (e) {
       var card = e.target.closest('.rec');
       if (!card) return;
@@ -334,7 +345,10 @@
         var sample = C.recordingFileName({ project: s.project.name, number: parseInt(String(s.nextDisplay).replace(/\D/g, ''), 10) || 1, date: new Date() });
         html = '文件名：<code>' + esc(sample) + '</code>';
       }
-      if (s.waitingDeletes) html += '<br>' + s.waitingDeletes + ' 个旧文件 Premiere 还占着，松手后自动删';
+      if (s.waitingDeletes) html += '<div>' + s.waitingDeletes + ' 个旧文件 Premiere 还占着，松手后自动删</div>';
+      html += '<div class="foot-row"><span>' + esc(api.version ? '版本 ' + api.version : '') +
+        (api.updateInfo && api.updateInfo.text ? ' · ' + esc(api.updateInfo.text) : '') + '</span>' +
+        (api.copyReport ? '<button class="link" data-act="report">' + (reportCopied ? '已复制，粘贴发过来' : '复制问题报告') + '</button>' : '') + '</div>';
       if ($('foot').innerHTML !== html) $('foot').innerHTML = html;
     }
 

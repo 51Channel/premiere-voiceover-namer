@@ -17,9 +17,9 @@ if exist "%APPDATA%\Adobe\UXP\Plugins\External\com.hechao.premiere.voiceover-nam
 echo.
 echo 装好了。重启 Premiere 就会在后台自动改名。
 echo 想看录音列表：窗口 - 扩展 - 赫朝录音改名
-pause
+if not defined VN_NO_PAUSE pause
 exit /b 0
 :fail
 echo 安装失败：复制文件没成功
-pause
+if not defined VN_NO_PAUSE pause
 exit /b 1

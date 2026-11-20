@@ -3,10 +3,10 @@
   赫朝录音改名（CEP 扩展）。Premiere Pro 2019（13.0）起都能用，Mac 和 Windows 一样。
   PR 一启动就在后台跑（不用打开面板也会改名）；想看录音列表就从「窗口 → 扩展 → 赫朝录音改名」打开。
 -->
-<ExtensionManifest Version="9.0" ExtensionBundleId="com.hechao.voiceover-namer" ExtensionBundleVersion="1.0.0"
+<ExtensionManifest Version="9.0" ExtensionBundleId="com.hechao.voiceover-namer" ExtensionBundleVersion="1.1.0"
   ExtensionBundleName="赫朝录音改名" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ExtensionList>
-    <Extension Id="com.hechao.voiceover-namer.panel" Version="1.0.0" />
+    <Extension Id="com.hechao.voiceover-namer.panel" Version="1.1.0" />
   </ExtensionList>
   <ExecutionEnvironment>
     <HostList>
